@@ -1,0 +1,15 @@
+- name: Installing core packages
+  become: yes
+  ansible.builtin.apt:
+    force_apt_get: true
+    state: present
+    pkg:
+      - build-essential
+      - curl
+      - git
+      - unzip
+      - vim
+      - wget
+  tags:
+    - install
+    - core

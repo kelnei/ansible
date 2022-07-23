@@ -1,0 +1,20 @@
+- hosts: localhost
+  vars:
+    user: "{{ lookup('env', 'USER') }}"
+    home: "{{ lookup('env', 'HOME') }}"
+    src_ssh_key: "./.ssh/id_ed25519"
+    dest_ssh_key: "{{ home }}/.ssh/id_ed25519"
+  pre_tasks:
+  - name: Update apt cache
+    become: yes
+    ansible.builtin.apt:
+      force_apt_get: true
+      update_cache: true
+      state: present
+    tags:
+      - install
+      - core
+  tasks:
+    - ansible.builtin.import_tasks: tasks/ssh.yml
+    - ansible.builtin.import_tasks: tasks/core.yml
+    - ansible.builtin.import_tasks: tasks/zsh.yml

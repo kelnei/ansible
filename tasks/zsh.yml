@@ -1,0 +1,58 @@
+- name: Install zsh
+  become: yes
+  ansible.builtin.apt:
+    force_apt_get: true
+    state: present
+    pkg:
+      - zsh
+  tags:
+    - install
+    - zsh
+
+- name: Set default shell to zsh
+  become: yes
+  ansible.builtin.user:
+    name: "{{ user }}"
+    shell: /usr/bin/zsh 
+    state: present
+  tags:
+    - zsh
+
+- name: Check if .oh-my-zsh exists
+  ansible.builtin.stat:
+    path: "{{ home }}/.oh-my-zsh"
+  register: omz_stat
+  tags:
+    - zsh
+
+- name: Fetch zsh installer
+  ansible.builtin.uri:
+    url: https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    return_content: yes
+  register: omz_stat_installer
+  when: omz_stat.stat.exists == False
+  tags:
+    - zsh
+
+- name: Run zsh installer
+  ansible.builtin.shell:
+    cmd: sh
+    stdin: "{{ omz_stat_installer.content }}"
+  when: omz_stat.stat.exists == False
+  tags:
+    - zsh
+
+- name: Check if zsh-autosuggestions exists
+  ansible.builtin.stat:
+    path: "{{ home }}/.oh-my-zsh/plugins/zsh-autosuggestions"
+  register: zas_stat
+  tags:
+    - zsh
+
+- name: Install zsh-autosuggestions
+  ansible.builtin.git:
+    repo: 'https://github.com/zsh-users/zsh-autosuggestions.git'
+    dest: "{{ home }}/.oh-my-zsh/plugins/zsh-autosuggestions"
+  when: zas_stat.stat.exists == False
+  tags:
+    - zsh
