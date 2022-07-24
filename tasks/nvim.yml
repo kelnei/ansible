@@ -1,0 +1,48 @@
+- name: Remove neovim if it exists
+  ansible.builtin.command: rm -rf /tmp/neovim
+  tags:
+    - nvim
+
+- name: Clone neovim
+  ansible.builtin.git:
+    repo: 'https://github.com/neovim/neovim.git'
+    dest: "/tmp/neovim"
+    version: 'stable'
+  tags:
+    - nvim
+
+- name: Installing neovim dependencies
+  become: yes
+  ansible.builtin.apt:
+    force_apt_get: true
+    state: present
+    pkg:
+      - autoconf
+      - automake
+      - cmake
+      - curl
+      - doxygen
+      - g++
+      - gettext
+      - libtool
+      - libtool-bin
+      - ninja-build
+      - pkg-config
+      - unzip
+  tags:
+    - nvim
+
+- name: Build neovim
+  ansible.builtin.command:
+    cmd: "make CMAKE_BUILD_TYPE=Release"
+    chdir: "/tmp/neovim"
+  tags:
+    - nvim
+
+- name: Install neovim
+  become: yes
+  ansible.builtin.command:
+    cmd: "make install"
+    chdir: "/tmp/neovim"
+  tags:
+    - nvim

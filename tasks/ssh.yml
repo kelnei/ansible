@@ -5,23 +5,53 @@
     state: directory
   tags:
     - ssh
-- name: Copy private key
+
+- name: Copy private RSA key
   ansible.builtin.copy:
-    src: "{{ src_ssh_key }}"
-    dest: "{{ dest_ssh_key }}"
+    src: "{{ src_rsa_key }}"
+    dest: "{{ dest_rsa_key }}"
     decrypt: yes
     mode: 0600
   tags:
     - ssh
-- name: Copy public key
+
+- name: Copy public RSA key
   ansible.builtin.copy:
-    src: "{{ src_ssh_key }}.pub"
-    dest: "{{ dest_ssh_key }}.pub"
+    src: "{{ src_rsa_key }}.pub"
+    dest: "{{ dest_rsa_key }}.pub"
     mode: 0644
   tags:
     - ssh
-- name: Set authorized key taken from file
+
+- name: Copy private ED25519 key
+  ansible.builtin.copy:
+    src: "{{ src_ed25519_key }}"
+    dest: "{{ dest_ed25519_key }}"
+    decrypt: yes
+    mode: 0600
+  tags:
+    - ssh
+
+- name: Copy public ED25519 key
+  ansible.builtin.copy:
+    src: "{{ src_ed25519_key }}.pub"
+    dest: "{{ dest_ed25519_key }}.pub"
+    mode: 0644
+  tags:
+    - ssh
+
+- name: Set authorized rsa key taken from file
   ansible.posix.authorized_key:
     user: "{{ user }}"
     state: present
-    key: "{{ lookup('file', lookup('vars', 'dest_ssh_key') + '.pub') }}"
+    key: "{{ lookup('file', lookup('vars', 'dest_rsa_key') + '.pub') }}"
+  tags:
+    - ssh
+
+- name: Set authorized ed25519 key taken from file
+  ansible.posix.authorized_key:
+    user: "{{ user }}"
+    state: present
+    key: "{{ lookup('file', lookup('vars', 'dest_ed25519_key') + '.pub') }}"
+  tags:
+    - ssh

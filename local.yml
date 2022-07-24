@@ -2,8 +2,10 @@
   vars:
     user: "{{ lookup('env', 'USER') }}"
     home: "{{ lookup('env', 'HOME') }}"
-    src_ssh_key: "./.ssh/id_ed25519"
-    dest_ssh_key: "{{ home }}/.ssh/id_ed25519"
+    src_rsa_key: "./.ssh/id_rsa"
+    dest_rsa_key: "{{ home }}/.ssh/id_rsa"
+    src_ed25519_key: "./.ssh/id_ed25519"
+    dest_ed25519_key: "{{ home }}/.ssh/id_ed25519"
   pre_tasks:
   - name: Update apt cache
     become: yes
@@ -18,3 +20,4 @@
     - ansible.builtin.import_tasks: tasks/ssh.yml
     - ansible.builtin.import_tasks: tasks/core.yml
     - ansible.builtin.import_tasks: tasks/zsh.yml
+    - ansible.builtin.import_tasks: tasks/nvim.yml
